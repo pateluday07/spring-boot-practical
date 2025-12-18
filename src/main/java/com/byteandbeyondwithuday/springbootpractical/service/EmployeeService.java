@@ -1,6 +1,6 @@
-package com.byteandbeyondwithuday.springbootrestapi.service;
+package com.byteandbeyondwithuday.springbootpractical.service;
 
-import com.byteandbeyondwithuday.springbootrestapi.entity.Employee;
+import com.byteandbeyondwithuday.springbootpractical.entity.Employee;
 
 import java.util.List;
 

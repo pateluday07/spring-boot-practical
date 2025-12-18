@@ -1,7 +1,7 @@
-package com.byteandbeyondwithuday.springbootrestapi.controller;
+package com.byteandbeyondwithuday.springbootpractical.controller;
 
-import com.byteandbeyondwithuday.springbootrestapi.entity.Employee;
-import com.byteandbeyondwithuday.springbootrestapi.service.EmployeeService;
+import com.byteandbeyondwithuday.springbootpractical.entity.Employee;
+import com.byteandbeyondwithuday.springbootpractical.service.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

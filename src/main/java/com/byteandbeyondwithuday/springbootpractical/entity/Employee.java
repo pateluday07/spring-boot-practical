@@ -1,4 +1,4 @@
-package com.byteandbeyondwithuday.springbootrestapi.entity;
+package com.byteandbeyondwithuday.springbootpractical.entity;
 
 import jakarta.persistence.*;
 

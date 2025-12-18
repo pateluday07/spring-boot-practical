@@ -1,7 +1,7 @@
-package com.byteandbeyondwithuday.springbootrestapi.service;
+package com.byteandbeyondwithuday.springbootpractical.service;
 
-import com.byteandbeyondwithuday.springbootrestapi.entity.Employee;
-import com.byteandbeyondwithuday.springbootrestapi.repository.EmployeeRepository;
+import com.byteandbeyondwithuday.springbootpractical.entity.Employee;
+import com.byteandbeyondwithuday.springbootpractical.repository.EmployeeRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
