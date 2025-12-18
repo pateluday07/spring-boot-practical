@@ -2,7 +2,7 @@ spring:
   application:
     name: spring-boot-rest-api-with-mysql-database-spring-data-jpa-tutorial
   datasource:
-    url: jdbc:mysql://localhost:3306/employee_demo?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/spring_boot_practical?createDatabaseIfNotExist=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
