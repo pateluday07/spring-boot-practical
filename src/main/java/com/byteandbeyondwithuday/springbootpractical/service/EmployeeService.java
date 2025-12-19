@@ -1,18 +1,18 @@
 package com.byteandbeyondwithuday.springbootpractical.service;
 
-import com.byteandbeyondwithuday.springbootpractical.entity.Employee;
+import com.byteandbeyondwithuday.springbootpractical.dto.EmployeeDTO;
 
 import java.util.List;
 
 public interface EmployeeService {
 
-    void save(Employee employee);
+    void save(EmployeeDTO employeeDTO);
 
-    Employee update(Employee employee);
+    EmployeeDTO update(EmployeeDTO employeeDTO);
 
-    Employee findById(Long id);
+    EmployeeDTO findById(Long id);
 
     void deleteById(Long id);
 
-    List<Employee> findAll();
+    List<EmployeeDTO> findAll();
 }

@@ -1,7 +1,8 @@
 package com.byteandbeyondwithuday.springbootpractical.controller;
 
-import com.byteandbeyondwithuday.springbootpractical.entity.Employee;
+import com.byteandbeyondwithuday.springbootpractical.dto.EmployeeDTO;
 import com.byteandbeyondwithuday.springbootpractical.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,18 +18,18 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> save(@RequestBody Employee employee) {
-        employeeService.save(employee);
+    public ResponseEntity<HttpStatus> save(@Valid @RequestBody EmployeeDTO employeeDTO) {
+        employeeService.save(employeeDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping
-    public ResponseEntity<Employee> update(@RequestBody Employee employee) {
-        return ResponseEntity.ok(employeeService.update(employee));
+    public ResponseEntity<EmployeeDTO> update(@Valid @RequestBody EmployeeDTO employeeDTO) {
+        return ResponseEntity.ok(employeeService.update(employeeDTO));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> findById(@PathVariable Long id) {
+    public ResponseEntity<EmployeeDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(employeeService.findById(id));
     }
 
@@ -39,7 +40,7 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<Employee>> findAll() {
+    public ResponseEntity<Iterable<EmployeeDTO>> findAll() {
         return ResponseEntity.ok(employeeService.findAll());
     }
 
