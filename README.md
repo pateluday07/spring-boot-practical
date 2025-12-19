@@ -37,7 +37,3 @@ public ResponseEntity<HttpStatus> save(@Valid @RequestBody EmployeeDTO employeeD
 
 [![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/workspace/uday-s-public-workspace/folder/1581944-dd76519e-bc76-454b-a95e-da8a925cb2ea?action=share&source=copy-link&creator=1581944&ctx=documentation)
 
-## Notes
-
-- This README only references code already present in the repo.
-- For full examples and error-handling (ControllerAdvice), see the project source files referenced above.
