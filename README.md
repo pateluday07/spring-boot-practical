@@ -37,3 +37,17 @@ public ResponseEntity<HttpStatus> save(@Valid @RequestBody EmployeeDTO employeeD
 
 [![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/workspace/uday-s-public-workspace/folder/1581944-dd76519e-bc76-454b-a95e-da8a925cb2ea?action=share&source=copy-link&creator=1581944&ctx=documentation)
 
+<!-- Stylish video card: clickable thumbnail + badge -->
+<div align="center">
+
+[![Validation in Spring Boot (thumbnail)](https://img.youtube.com/vi/Dgym6yLNUbM/0.jpg)](https://youtu.be/Dgym6yLNUbM)
+
+<br/>
+
+[![▶ Watch on YouTube](https://img.shields.io/badge/▶%20Watch%20Video-Validation%20in%20Spring%20Boot-red?logo=youtube&style=for-the-badge)](https://youtu.be/Dgym6yLNUbM)
+
+<br/>
+
+<sub>Validation in Spring Boot — companion video by ByteAndBeyondWithUday</sub>
+
+</div>
