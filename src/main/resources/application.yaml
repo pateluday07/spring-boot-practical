@@ -11,3 +11,6 @@ spring:
       ddl-auto: update
       show-sql: true
     show-sql: true
+  messages:
+    basename: messages
+    encoding: UTF-8

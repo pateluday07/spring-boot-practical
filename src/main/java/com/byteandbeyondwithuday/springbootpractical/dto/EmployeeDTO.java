@@ -10,12 +10,12 @@ import java.util.Objects;
 public class EmployeeDTO {
 
     private Long employeeId;
-    @NotBlank
+    @NotBlank(message = "{employee.firstName.notBlank}")
     private String firstName;
     private String lastName;
-    @Email
+    @Email(message = "{employee.email.valid}")
     private String email;
-    @DecimalMin(value = "8000.00")
+    @DecimalMin(value = "8000.00", message = "{employee.salary.min}")
     private BigDecimal salary;
 
     public Long getEmployeeId() {
