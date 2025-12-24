@@ -1,24 +1,9 @@
 ## ✅ Step-by-step Flow
 
-### 1️⃣ Add validation dependency
-Add `spring-boot-starter-validation` to enable input validation in Spring Boot.
+1️⃣ Write friendly validation messages in `messages.properties` so users see clear errors.
 
----
+2️⃣ Use those messages in `EmployeeDTO` validation annotations.
 
-### 2️⃣ Create `EmployeeDTO`
-Define a DTO class and apply validation annotations on the required fields.
+3️⃣ Add a `@RestControllerAdvice` to catch validation exceptions globally.
 
----
-
-### 3️⃣ Create a mapper
-Create a mapper to convert between `EmployeeDTO` and `Employee` to keep layers clean.
-
----
-
-### 4️⃣ Update controller and service
-Use `EmployeeDTO` in controller and service layers instead of exposing the entity directly.
-
----
-
-### 5️⃣ Test the application
-Send both valid and invalid requests to verify validation and DTO mapping.
+4️⃣ Test by sending valid and invalid requests and verify responses.
