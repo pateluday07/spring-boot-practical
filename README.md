@@ -35,19 +35,19 @@ public ResponseEntity<HttpStatus> save(@Valid @RequestBody EmployeeDTO employeeD
 
 [![YouTube](https://img.shields.io/badge/YouTube-ByteAndBeyondWithUday-red?logo=youtube&logoColor=white&style=flat-square)](https://www.youtube.com/@ByteAndBeyondWithUday)
 
-[![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/workspace/uday-s-public-workspace/folder/1581944-dd76519e-bc76-454b-a95e-da8a925cb2ea?action=share&source=copy-link&creator=1581944&ctx=documentation)
+[![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/uday-s-public-workspace/folder/1581944-5aea2edb-e798-4eec-96a3-c0b8b6e1ce1e?action=share&source=copy-link&creator=1581944&ctx=documentation)
 
 <!-- Stylish video card: clickable thumbnail + badge -->
 <div align="center">
 
-[![Validation in Spring Boot (thumbnail)](https://img.youtube.com/vi/Dgym6yLNUbM/0.jpg)](https://youtu.be/Dgym6yLNUbM)
+[![Custom Validation in Spring Boot (thumbnail)](https://img.youtube.com/vi/7nKaBNFVP6s/0.jpg)](https://youtu.be/7nKaBNFVP6s)
 
 <br/>
 
-[![▶ Watch on YouTube](https://img.shields.io/badge/▶%20Watch%20Video-Validation%20in%20Spring%20Boot-red?logo=youtube&style=for-the-badge)](https://youtu.be/Dgym6yLNUbM)
+[![▶ Watch on YouTube](https://img.shields.io/badge/▶%20Watch%20Video-Custom%20Validation%20in%20Spring%20Boot-red?logo=youtube&style=for-the-badge)](https://youtu.be/7nKaBNFVP6s)
 
 <br/>
 
-<sub>Validation in Spring Boot — companion video by ByteAndBeyondWithUday</sub>
+<sub>Custom Validation in Spring Boot — companion video by ByteAndBeyondWithUday</sub>
 
 </div>
