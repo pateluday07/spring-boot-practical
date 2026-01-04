@@ -1,9 +1,24 @@
-## ✅ Step-by-step Flow
+## ✅ Step-by-Step Flow
 
-1️⃣ Write friendly validation messages in `messages.properties` so users see clear errors.
+### 1️⃣ Show the problem first
+Call the APIs *without* any custom exception handling and observe the default error response.
 
-2️⃣ Use those messages in `EmployeeDTO` validation annotations.
+---
 
-3️⃣ Add a `@RestControllerAdvice` to catch validation exceptions globally.
+### 2️⃣ Create custom exceptions and a common error response model
+Define your own exception classes and a standard error response structure.
 
-4️⃣ Test by sending valid and invalid requests and verify responses.
+---
+
+### 3️⃣ Add a global exception handler
+Use `@RestControllerAdvice` to catch and return custom error responses.
+
+---
+
+### 4️⃣ Update the service layer
+Throw your custom exceptions instead of generic exceptions.
+
+---
+
+### 5️⃣ Test everything again
+Verify that the APIs now return clean and consistent error responses.
