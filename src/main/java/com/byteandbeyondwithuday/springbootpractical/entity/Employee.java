@@ -19,6 +19,8 @@ public class Employee {
     private String email;
     @Column(precision = 10, scale = 2)
     private BigDecimal salary;
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private IdCard idCard;
 
     public Long getEmployeeId() {
         return employeeId;
@@ -58,6 +60,22 @@ public class Employee {
 
     public void setSalary(BigDecimal salary) {
         this.salary = salary;
+    }
+
+    public IdCard getIdCard() {
+        return idCard;
+    }
+    //ToDo cover this during testing
+    public void setIdCard(IdCard idCard) {
+        if (idCard == null) {
+            if (this.idCard != null) {
+                this.idCard.setEmployee(null);
+            }
+            this.idCard = null;
+            return;
+        }
+        this.idCard = idCard;
+        idCard.setEmployee(this);
     }
 
     @Override
