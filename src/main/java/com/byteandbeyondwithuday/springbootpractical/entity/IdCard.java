@@ -10,7 +10,7 @@ public class IdCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long idCardId;
+    private Long id;
     @Column(nullable = false, unique = true, length = 50)
     private String cardNumber;
     @Column(nullable = false)
@@ -21,12 +21,12 @@ public class IdCard {
     @JoinColumn(name = "employee_id", nullable = false, unique = true)
     private Employee employee;
 
-    public Long getIdCardId() {
-        return idCardId;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdCardId(Long idCardId) {
-        this.idCardId = idCardId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getCardNumber() {
@@ -64,11 +64,11 @@ public class IdCard {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof IdCard idCard)) return false;
-        return Objects.equals(idCardId, idCard.idCardId);
+        return Objects.equals(id, idCard.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(idCardId);
+        return Objects.hashCode(id);
     }
 }

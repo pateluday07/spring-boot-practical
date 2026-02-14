@@ -10,7 +10,7 @@ public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long employeeId;
+    private Long id;
     @Column(nullable = false, length = 100)
     private String firstName;
     @Column(length = 100)
@@ -22,12 +22,12 @@ public class Employee {
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private IdCard idCard;
 
-    public Long getEmployeeId() {
-        return employeeId;
+    public Long getId() {
+        return id;
     }
 
-    public void setEmployeeId(Long employeeId) {
-        this.employeeId = employeeId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -81,18 +81,18 @@ public class Employee {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Employee employee)) return false;
-        return Objects.equals(employeeId, employee.employeeId);
+        return Objects.equals(id, employee.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(employeeId);
+        return Objects.hashCode(id);
     }
 
     @Override
     public String toString() {
         return "Employee{" +
-                "id=" + employeeId +
+                "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", salary=" + salary +

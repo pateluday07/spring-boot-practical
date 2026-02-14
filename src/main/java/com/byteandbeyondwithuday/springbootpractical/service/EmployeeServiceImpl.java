@@ -88,7 +88,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private void validateEmailUniquenessForUpdate(String email, Long employeeId) {
         employeeRepository.findByEmail(email).ifPresent(existingEmployee -> {
-            if (!existingEmployee.getEmployeeId().equals(employeeId)) {
+            if (!existingEmployee.getId().equals(employeeId)) {
                 throw new ResourceConflictException(ErrorMessage.EMPLOYEE_EMAIL_ALREADY_EXISTS.formatMessage(email));
             }
         });

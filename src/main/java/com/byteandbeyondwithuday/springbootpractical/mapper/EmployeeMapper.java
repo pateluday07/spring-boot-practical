@@ -12,7 +12,7 @@ public class EmployeeMapper {
             return null;
         }
         Employee employee = new Employee();
-        employee.setEmployeeId(employeeDTO.getEmployeeId());
+        employee.setId(employeeDTO.getEmployeeId());
         employee.setFirstName(employeeDTO.getFirstName());
         employee.setLastName(employeeDTO.getLastName());
         employee.setEmail(employeeDTO.getEmail());
@@ -25,7 +25,7 @@ public class EmployeeMapper {
             return null;
         }
         EmployeeDTO employeeDTO = new EmployeeDTO();
-        employeeDTO.setEmployeeId(employee.getEmployeeId());
+        employeeDTO.setEmployeeId(employee.getId());
         employeeDTO.setFirstName(employee.getFirstName());
         employeeDTO.setLastName(employee.getLastName());
         employeeDTO.setEmail(employee.getEmail());
