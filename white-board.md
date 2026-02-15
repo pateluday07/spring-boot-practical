@@ -1,24 +1,31 @@
-## ✅ Step-by-Step Flow
+# ✅ One-To-One Step-by-Step Flow
 
-### 1️⃣ Show the problem first
-Call the APIs *without* any custom exception handling and observe the default error response.
+## What is One-To-One
+A One-To-One relationship means one record in one table is linked to exactly one record in another table.
 
----
+## Database design
+Create two tables (`employee` and `id_card`) where each employee can have only one id card.
 
-### 2️⃣ Create custom exceptions and a common error response model
-Define your own exception classes and a standard error response structure.
+## Owning side
+The owning side is `IdCard` because it contains `@JoinColumn` and controls the foreign key value.
 
----
+## mappedBy
+`mappedBy` marks the inverse side (`Employee`) and tells JPA that the relationship is managed by the owning side field.
 
-### 3️⃣ Add a global exception handler
-Use `@RestControllerAdvice` to catch and return custom error responses.
+## Foreign key
+The foreign key `id_card.employee_id` references `employee.id` and should be `UNIQUE` to enforce one-to-one.
 
----
+## Cascade
+`CascadeType.ALL` lets operations on `Employee` automatically propagate to related `IdCard`.
 
-### 4️⃣ Update the service layer
-Throw your custom exceptions instead of generic exceptions.
+## orphanRemoval
+`orphanRemoval = true` deletes the `IdCard` row when it is detached from its parent `Employee`.
 
----
+## LAZY vs EAGER
+`LAZY` loads related data only when accessed, while `EAGER` loads it immediately with the parent entity.
 
-### 5️⃣ Test everything again
-Verify that the APIs now return clean and consistent error responses.
+## Show table creation
+Display generated schema (`employee` and `id_card`) to explain primary key, foreign key, and unique constraints.
+
+## Insert sample data
+Insert sample `Employee` and `IdCard` data.
