@@ -87,7 +87,7 @@ Meaning:
 ### Show table structure
 
 ```sql
-USE your_database_name;
+USE spring_boot_practical;
 
 SHOW TABLES;
 DESCRIBE employee;
