@@ -1,5 +1,6 @@
 package com.byteandbeyondwithuday.springbootpractical.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ public class IdCard {
     private LocalDate expiryDate;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false, unique = true)
+    @JsonIgnore
     private Employee employee;
 
     public Long getId() {

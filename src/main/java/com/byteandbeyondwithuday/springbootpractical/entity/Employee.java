@@ -65,7 +65,7 @@ public class Employee {
     public IdCard getIdCard() {
         return idCard;
     }
-    //ToDo cover this during testing
+
     public void setIdCard(IdCard idCard) {
         if (idCard == null) {
             if (this.idCard != null) {

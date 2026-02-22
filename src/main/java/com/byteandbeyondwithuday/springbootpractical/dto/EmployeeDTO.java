@@ -1,5 +1,6 @@
 package com.byteandbeyondwithuday.springbootpractical.dto;
 
+import com.byteandbeyondwithuday.springbootpractical.entity.IdCard;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -17,6 +18,7 @@ public class EmployeeDTO {
     private String email;
     @DecimalMin(value = "8000.00", message = "{employee.salary.min}")
     private BigDecimal salary;
+    private IdCard idCard;
 
     public Long getEmployeeId() {
         return employeeId;
@@ -56,6 +58,14 @@ public class EmployeeDTO {
 
     public void setSalary(BigDecimal salary) {
         this.salary = salary;
+    }
+
+    public IdCard getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(IdCard idCard) {
+        this.idCard = idCard;
     }
 
     @Override
