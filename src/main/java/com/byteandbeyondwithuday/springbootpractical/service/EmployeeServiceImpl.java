@@ -50,6 +50,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public void deleteIdCardByEmployeeId(Long id) {
+        validateEmployeeExistsById(id);
+        employeeRepository.findById(id).ifPresent(e -> e.setIdCard(null));
+    }
+
+    @Override
     public List<EmployeeDTO> findAll() {
         return employeeRepository
                 .findAll()

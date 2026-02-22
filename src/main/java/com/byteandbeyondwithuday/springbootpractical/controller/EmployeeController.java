@@ -39,6 +39,12 @@ public class EmployeeController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @DeleteMapping("/{id}/id-card")
+    public ResponseEntity<HttpStatus> deleteIdCardByEmployeeId(@PathVariable Long id) {
+        employeeService.deleteIdCardByEmployeeId(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     @GetMapping
     public ResponseEntity<Iterable<EmployeeDTO>> findAll() {
         return ResponseEntity.ok(employeeService.findAll());

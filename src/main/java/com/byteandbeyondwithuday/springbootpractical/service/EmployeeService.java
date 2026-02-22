@@ -14,5 +14,7 @@ public interface EmployeeService {
 
     void deleteById(Long id);
 
+    void deleteIdCardByEmployeeId(Long id);
+
     List<EmployeeDTO> findAll();
 }
