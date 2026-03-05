@@ -78,6 +78,10 @@ public class Employee {
         idCard.setEmployee(this);
     }
 
+    public void removeIdCard() {
+        this.idCard = null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Employee employee)) return false;

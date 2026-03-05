@@ -1,17 +1,20 @@
 package com.byteandbeyondwithuday.springbootpractical.service;
 
 import com.byteandbeyondwithuday.springbootpractical.dto.EmployeeDTO;
+import com.byteandbeyondwithuday.springbootpractical.entity.Employee;
 import com.byteandbeyondwithuday.springbootpractical.exception.BadRequestException;
 import com.byteandbeyondwithuday.springbootpractical.exception.ErrorMessage;
 import com.byteandbeyondwithuday.springbootpractical.exception.ResourceConflictException;
 import com.byteandbeyondwithuday.springbootpractical.exception.ResourceNotFoundException;
 import com.byteandbeyondwithuday.springbootpractical.mapper.EmployeeMapper;
 import com.byteandbeyondwithuday.springbootpractical.repository.EmployeeRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
@@ -52,7 +55,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteIdCardByEmployeeId(Long id) {
         validateEmployeeExistsById(id);
-        employeeRepository.findById(id).ifPresent(e -> e.setIdCard(null));
+        employeeRepository.findById(id).ifPresent(Employee::removeIdCard);
     }
 
     @Override
