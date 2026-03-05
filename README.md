@@ -125,4 +125,4 @@ LEFT JOIN id_card c ON c.employee_id = e.id;
 
 [![YouTube](https://img.shields.io/badge/YouTube-ByteAndBeyondWithUday-red?logo=youtube&logoColor=white&style=flat-square)](https://www.youtube.com/@ByteAndBeyondWithUday)
 
-[![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/workspace/uday-s-public-workspace/folder/1581944-1ba8e64f-4ff8-4f48-bad9-4c22e3fae205?action=share&source=copy-link&creator=1581944&ctx=documentation)
+[![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/uday-s-public-workspace/folder/1581944-5479ea1d-631e-444b-8745-d1d2d8e2731e?action=share&source=copy-link&creator=1581944)
