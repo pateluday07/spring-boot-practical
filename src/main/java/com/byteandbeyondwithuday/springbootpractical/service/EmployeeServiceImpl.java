@@ -2,16 +2,20 @@ package com.byteandbeyondwithuday.springbootpractical.service;
 
 import com.byteandbeyondwithuday.springbootpractical.dto.EmployeeDTO;
 import com.byteandbeyondwithuday.springbootpractical.entity.Employee;
+import com.byteandbeyondwithuday.springbootpractical.entity.IdCard;
 import com.byteandbeyondwithuday.springbootpractical.exception.BadRequestException;
 import com.byteandbeyondwithuday.springbootpractical.exception.ErrorMessage;
 import com.byteandbeyondwithuday.springbootpractical.exception.ResourceConflictException;
 import com.byteandbeyondwithuday.springbootpractical.exception.ResourceNotFoundException;
 import com.byteandbeyondwithuday.springbootpractical.mapper.EmployeeMapper;
 import com.byteandbeyondwithuday.springbootpractical.repository.EmployeeRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -19,6 +23,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper) {
         this.employeeRepository = employeeRepository;
@@ -41,8 +47,22 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDTO findById(Long id) {
-        return employeeMapper.toDTO(employeeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessage.EMPLOYEE_NOT_FOUND.formatMessage(id))));
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        if(optionalEmployee.isEmpty()) {
+            throw new ResourceNotFoundException(ErrorMessage.EMPLOYEE_NOT_FOUND.formatMessage(id));
+        }
+        Employee employee = optionalEmployee.get();
+
+        // Demonstrate DETACH: changes after detach are not auto-persisted.
+        employee.setFirstName(employee.getFirstName().concat("-UPDATED"));
+
+        // Demonstrate that changes to related entities are also not persisted after detach.
+        IdCard idCard = employee.getIdCard();
+        idCard.setCardNumber(idCard.getCardNumber().concat("-UPDATED"));
+
+        entityManager.detach(employee);
+
+        return employeeMapper.toDTO(employee);
     }
 
     @Override
