@@ -1,128 +1,98 @@
-# Spring Boot JPA One-to-One - Practical Notes
+# JPA DETACH — Practical Notes (`Employee` ↔ `IdCard`)
 
-This README is based on the `Employee` and `IdCard` entities in this project.
+This branch is **only** about **DETACH** in JPA: what it means, how `entityManager.detach()` behaves, why updates can stop being saved, and how **`CascadeType.DETACH`** affects a parent–child graph.
 
-## 1) What is One-to-One
+---
 
-A One-to-One relationship means one row in table A is linked to exactly one row in table B.
+## Why your entity changes might not save
 
-In this project:
-- One `Employee` has one `IdCard`.
-- One `IdCard` belongs to one `Employee`.
+If you change an entity in Spring Boot but nothing updates in the database, one common reason is that the instance is **no longer managed**—for example, after a **detach**.
 
-## 2) Database Design
+**Takeaway**
 
-The project uses two tables:
-- `employee`
-- `id_card`
+- **Managed** entity → persistence context **tracks** changes; they can be flushed on commit.
+- **Detached** entity → changes are **not** saved automatically; the provider is no longer managing that instance.
 
-`id_card.employee_id` references `employee.id` and is unique, which enforces one-to-one.
+---
 
-## 3) Owning vs Inverse
+## What DETACH means
 
-`IdCard` is the owning side because it contains `@JoinColumn`.
+**Detach** removes an entity (and, when configured, its associations) from the **persistence context**. After that, JPA does not treat that object as part of the current unit of work, so ordinary dirty checking will not persist those changes.
+
+---
+
+## `entityManager.detach(entity)`
+
+Calling `detach` on the `EntityManager` explicitly removes the given entity from the persistence context. Any pending changes on that instance are **not** written when the transaction commits **unless** you merge or otherwise re-attach the state appropriately.
+
+---
+
+## `CascadeType.DETACH` on the association
+
+On the inverse side, `Employee` declares cascade including **`CascadeType.DETACH`**:
 
 ```java
-@OneToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "employee_id", nullable = false, unique = true)
-private Employee employee;
-```
-
-`Employee` is the inverse side because it uses `mappedBy = "employee"`.
-
-```java
-@OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+@OneToOne(mappedBy = "employee",
+        cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE, CascadeType.DETACH},
+        orphanRemoval = true, fetch = FetchType.LAZY)
 private IdCard idCard;
 ```
 
-## 4) mappedBy
+When a detach operation **cascades** along this mapping, detaching the **`Employee`** also detaches the related **`IdCard`** from the same persistence context (per the cascade rules).
 
-`mappedBy = "employee"` tells JPA:
-- Do not create another foreign key column on `employee`.
-- The relationship is controlled by `IdCard.employee`.
+---
 
-## 5) Foreign key
+## DETACH vs “Cascade DETACH”
 
-Foreign key is:
-- Column: `id_card.employee_id`
-- References: `employee.id`
-- Constraint behavior: `NOT NULL` + `UNIQUE`
+| Idea | Meaning |
+|------|--------|
+| **Detach** | The operation: remove instance(s) from the persistence context (e.g. `entityManager.detach(employee)`). |
+| **`CascadeType.DETACH`** | Configuration on the association: when detach is applied to the parent, **propagate** detach to the linked `IdCard` according to the mapping. |
 
-This ensures each ID card is tied to exactly one employee, and an employee can have only one ID card.
+So: **detach** is what you *do*; **`CascadeType.DETACH`** declares whether **child** entities in this relationship should follow when the **parent** is detached.
 
-## 6) Cascade
+---
 
-On `Employee` side:
+## Example in this project: `EmployeeServiceImpl.findById`
 
-```java
-cascade = CascadeType.ALL
-```
-
-Effect:
-- Persist employee -> id card is persisted.
-- Merge/remove operations propagate to id card.
-
-## 7) orphanRemoval
-
-On `Employee` side:
+`findById` loads an `Employee`, updates fields on the employee and on the loaded `IdCard`, then calls **`entityManager.detach(employee)`** before mapping to a DTO. The mutations happen **while** the graph is still managed; **`detach`** runs **before** commit, so those changes are **not** flushed. The response still reflects the **in-memory** `-UPDATED` values on the detached objects, while the database rows stay unchanged—illustrating **managed vs detached** behavior and cascade detach on **`Employee` → `IdCard`**.
 
 ```java
-orphanRemoval = true
+@Override
+public EmployeeDTO findById(Long id) {
+    Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+    if(optionalEmployee.isEmpty()) {
+        throw new ResourceNotFoundException(ErrorMessage.EMPLOYEE_NOT_FOUND.formatMessage(id));
+    }
+    Employee employee = optionalEmployee.get();
+
+    // Demonstrate DETACH: mutate while managed, then detach — these changes are not persisted on flush.
+    employee.setFirstName(employee.getFirstName().concat("-UPDATED"));
+
+    // IdCard follows on cascade detach; its changes are not persisted either.
+    IdCard idCard = employee.getIdCard();
+    idCard.setCardNumber(idCard.getCardNumber().concat("-UPDATED"));
+
+    entityManager.detach(employee);
+
+    return employeeMapper.toDTO(employee);
+}
 ```
 
-Effect:
-- If `employee.setIdCard(null)` is called and saved, the old `id_card` row is deleted as an orphan.
+---
 
-## 8) LAZY vs EAGER
+## Video: *Why Your JPA Entity Changes Are Not Saving? (DETACH Explained)*
 
-Both sides are configured as `FetchType.LAZY`.
+This repo pairs with a walkthrough that covers:
 
-Meaning:
-- `Employee` loads without `IdCard` initially.
-- `IdCard` loads without `Employee` initially.
-- Related object loads only when accessed (inside active persistence context/session).
+- What **DETACH** really means in JPA
+- How **`entityManager.detach()`** works
+- Why changes are **not** saved after detaching an entity
+- What **`CascadeType.DETACH`** is
+- How detaching a **parent** can detach the **child** when cascade is set
+- The difference between **detach** and **cascade detach**
+- A step-by-step **Employee → IdCard** example
 
-## 9) Show tables + insert sample
+[![YouTube — ByteAndBeyondWithUday](https://img.shields.io/badge/YouTube-ByteAndBeyondWithUday-red?logo=youtube&logoColor=white&style=flat-square)](https://www.youtube.com/@ByteAndBeyondWithUday)
 
-### Show table structure
-
-```sql
-USE spring_boot_practical;
-
-SHOW TABLES;
-DESCRIBE employee;
-DESCRIBE id_card;
-```
-
-### Insert sample data
-
-Use existing files:
-- `src/main/resources/sql/insert_employee.sql`
-- `src/main/resources/sql/insert_id_card.sql`
-
-Or run manually:
-
-```sql
-USE your_database_name;
-
-INSERT INTO employee (first_name, last_name, email, salary)
-VALUES ('John', 'Miller', 'john.miller@example.com', 95000.00);
-
-INSERT INTO id_card (card_number, issue_date, expiry_date, employee_id)
-VALUES ('EMP-1001', '2026-01-01', '2028-12-31',
-        (SELECT id FROM employee WHERE email = 'john.miller@example.com'));
-```
-
-### Verify relationship
-
-```sql
-SELECT e.id, e.first_name, e.email, c.card_number
-FROM employee e
-LEFT JOIN id_card c ON c.employee_id = e.id;
-```
-
-### Helpful links
-
-[![YouTube](https://img.shields.io/badge/YouTube-ByteAndBeyondWithUday-red?logo=youtube&logoColor=white&style=flat-square)](https://www.youtube.com/@ByteAndBeyondWithUday)
-
-[![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/uday-s-public-workspace/folder/1581944-5479ea1d-631e-444b-8745-d1d2d8e2731e?action=share&source=copy-link&creator=1581944)
+[![Postman collection](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/uday-s-public-workspace/folder/1581944-5479ea1d-631e-444b-8745-d1d2d8e2731e?action=share&source=copy-link&creator=1581944)
