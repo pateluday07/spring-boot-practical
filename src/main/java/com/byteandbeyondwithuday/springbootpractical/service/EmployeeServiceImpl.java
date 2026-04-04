@@ -53,14 +53,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         Employee employee = optionalEmployee.get();
 
-        // Demonstrate DETACH: changes after detach are not auto-persisted.
+        // Demonstrate REFRESH behavior: changes made to the entity will be overwritten by the database state after refresh.
         employee.setFirstName(employee.getFirstName().concat("-UPDATED"));
 
-        // Demonstrate that changes to related entities are also not persisted after detach.
+        // Accessing the associated IdCard to demonstrate that it will be refreshed as well.
         IdCard idCard = employee.getIdCard();
         idCard.setCardNumber(idCard.getCardNumber().concat("-UPDATED"));
 
-        entityManager.detach(employee);
+        entityManager.refresh(employee);
 
         return employeeMapper.toDTO(employee);
     }

@@ -19,7 +19,7 @@ public class Employee {
     private String email;
     @Column(precision = 10, scale = 2)
     private BigDecimal salary;
-    @OneToOne(mappedBy = "employee", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE, CascadeType.DETACH}, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "employee", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, orphanRemoval = true, fetch = FetchType.LAZY)
     private IdCard idCard;
 
     public Long getId() {
