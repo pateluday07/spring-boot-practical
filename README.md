@@ -1,125 +1,75 @@
-# Spring Boot JPA One-to-One - Practical Notes
+# Spring Boot JPA `@MapsId` - Practical Notes
 
-This README is based on the `Employee` and `IdCard` entities in this project.
+This project demonstrates a one-to-one mapping using a **shared primary key** with `@MapsId` between `Employee` and `IdCard`.
 
-## 1) What is One-to-One
+## 1) What `@MapsId` means here
 
-A One-to-One relationship means one row in table A is linked to exactly one row in table B.
+`@MapsId` tells JPA that `IdCard` should reuse the primary key of `Employee`.
 
-In this project:
-- One `Employee` has one `IdCard`.
-- One `IdCard` belongs to one `Employee`.
+- Parent entity: `Employee` (`id` is generated with `IDENTITY`)
+- Child entity: `IdCard` (`id` is not generated separately)
+- Relationship key: `id_card.id` is both:
+  - Primary key of `id_card`
+  - Foreign key referencing `employee.id`
 
-## 2) Database Design
+So there is no separate `employee_id` column in `id_card` for this mapping style.
 
-The project uses two tables:
-- `employee`
-- `id_card`
+## 2) Entity mapping in this project
 
-`id_card.employee_id` references `employee.id` and is unique, which enforces one-to-one.
-
-## 3) Owning vs Inverse
-
-`IdCard` is the owning side because it contains `@JoinColumn`.
+`IdCard` (owning side, shared PK):
 
 ```java
+@Id
+private Long id;
+
+@MapsId
 @OneToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "employee_id", nullable = false, unique = true)
+@JoinColumn(name = "id", nullable = false, unique = true)
 private Employee employee;
 ```
 
-`Employee` is the inverse side because it uses `mappedBy = "employee"`.
+`Employee` (inverse side):
 
 ```java
 @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 private IdCard idCard;
 ```
 
-## 4) mappedBy
+## 3) Persist behavior with `@MapsId`
 
-`mappedBy = "employee"` tells JPA:
-- Do not create another foreign key column on `employee`.
-- The relationship is controlled by `IdCard.employee`.
+When persisting, set both sides through `employee.setIdCard(idCard)` and save `Employee`.
 
-## 5) Foreign key
+Because of `@MapsId`:
+- `Employee` is inserted first and gets generated `id`
+- `IdCard.id` is automatically mapped to that same `Employee.id`
+- `IdCard` row uses the same key value as its parent
 
-Foreign key is:
-- Column: `id_card.employee_id`
-- References: `employee.id`
-- Constraint behavior: `NOT NULL` + `UNIQUE`
-
-This ensures each ID card is tied to exactly one employee, and an employee can have only one ID card.
-
-## 6) Cascade
-
-On `Employee` side:
-
-```java
-cascade = CascadeType.ALL
-```
-
-Effect:
-- Persist employee -> id card is persisted.
-- Merge/remove operations propagate to id card.
-
-## 7) orphanRemoval
-
-On `Employee` side:
-
-```java
-orphanRemoval = true
-```
-
-Effect:
-- If `employee.setIdCard(null)` is called and saved, the old `id_card` row is deleted as an orphan.
-
-## 8) LAZY vs EAGER
-
-Both sides are configured as `FetchType.LAZY`.
-
-Meaning:
-- `Employee` loads without `IdCard` initially.
-- `IdCard` loads without `Employee` initially.
-- Related object loads only when accessed (inside active persistence context/session).
-
-## 9) Show tables + insert sample
-
-### Show table structure
+## 4) Expected table shape
 
 ```sql
-USE spring_boot_practical;
-
-SHOW TABLES;
 DESCRIBE employee;
 DESCRIBE id_card;
 ```
 
-### Insert sample data
+You should see:
+- `employee.id` as PK
+- `id_card.id` as PK and FK to `employee.id`
 
-Use existing files:
-- `src/main/resources/sql/insert_employee.sql`
-- `src/main/resources/sql/insert_id_card.sql`
-
-Or run manually:
+## 5) Verify shared primary key data
 
 ```sql
-USE your_database_name;
-
-INSERT INTO employee (first_name, last_name, email, salary)
-VALUES ('John', 'Miller', 'john.miller@example.com', 95000.00);
-
-INSERT INTO id_card (card_number, issue_date, expiry_date, employee_id)
-VALUES ('EMP-1001', '2026-01-01', '2028-12-31',
-        (SELECT id FROM employee WHERE email = 'john.miller@example.com'));
-```
-
-### Verify relationship
-
-```sql
-SELECT e.id, e.first_name, e.email, c.card_number
+SELECT e.id AS employee_id, c.id AS id_card_id, c.card_number
 FROM employee e
-LEFT JOIN id_card c ON c.employee_id = e.id;
+LEFT JOIN id_card c ON c.id = e.id;
 ```
+
+For linked rows, `employee_id` and `id_card_id` must be equal.
+
+## 6) Notes for this codebase
+
+- `cascade = CascadeType.ALL` allows persisting/removing `IdCard` through `Employee`
+- `orphanRemoval = true` removes the old `IdCard` row when detached from `Employee`
+- Both sides use `FetchType.LAZY`
 
 ### Helpful links
 
