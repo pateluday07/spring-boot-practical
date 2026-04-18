@@ -2,26 +2,31 @@ package com.byteandbeyondwithuday.springbootpractical.service;
 
 import com.byteandbeyondwithuday.springbootpractical.dto.EmployeeDTO;
 import com.byteandbeyondwithuday.springbootpractical.entity.Employee;
+import com.byteandbeyondwithuday.springbootpractical.entity.IdCard;
 import com.byteandbeyondwithuday.springbootpractical.exception.BadRequestException;
 import com.byteandbeyondwithuday.springbootpractical.exception.ErrorMessage;
 import com.byteandbeyondwithuday.springbootpractical.exception.ResourceConflictException;
 import com.byteandbeyondwithuday.springbootpractical.exception.ResourceNotFoundException;
 import com.byteandbeyondwithuday.springbootpractical.mapper.EmployeeMapper;
 import com.byteandbeyondwithuday.springbootpractical.repository.EmployeeRepository;
+import com.byteandbeyondwithuday.springbootpractical.repository.IdCardRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@Transactional
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final IdCardRepository idCardRepository;
     private final EmployeeMapper employeeMapper;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, IdCardRepository idCardRepository, EmployeeMapper employeeMapper) {
         this.employeeRepository = employeeRepository;
+        this.idCardRepository = idCardRepository;
         this.employeeMapper = employeeMapper;
     }
 
@@ -30,6 +35,32 @@ public class EmployeeServiceImpl implements EmployeeService {
         validateEmployeeForCreate(employeeDTO);
 
         employeeRepository.save(employeeMapper.toEntity(employeeDTO));
+    }
+
+    @Override
+    @Transactional
+    public void createEmployeeAndIdCardForAtomicDemo(boolean shouldFail) {
+        Employee employee = new Employee();
+        employee.setFirstName("Harry");
+        employee.setLastName("Potter");
+        employee.setEmail("harry@gmail.com");
+        employee.setSalary(new BigDecimal("15000.00"));
+
+        // Step 1: save employee first
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        if (shouldFail) {
+            // Step 2 fails intentionally to demonstrate rollback of step 1 as well
+            throw new RuntimeException("Simulated IdCard save failure after Employee save");
+        }
+
+        IdCard idCard = new IdCard();
+        idCard.setCardNumber("CARD-" + System.nanoTime());
+        idCard.setIssueDate(LocalDate.now());
+        idCard.setExpiryDate(LocalDate.now().plusYears(5));
+
+        idCard.setEmployee(savedEmployee);
+        idCardRepository.save(idCard);
     }
 
     @Override

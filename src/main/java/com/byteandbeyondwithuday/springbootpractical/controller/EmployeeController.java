@@ -23,6 +23,17 @@ public class EmployeeController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PostMapping("/transactional-demo")
+    public ResponseEntity<String> runTransactionalDemo(@RequestParam(defaultValue = "true") Boolean shouldFail) {
+        try {
+            employeeService.createEmployeeAndIdCardForAtomicDemo(shouldFail);
+            return ResponseEntity.ok("SUCCESS: Employee and IdCard saved in one transaction.");
+        } catch (RuntimeException ex) {
+            String message = "ROLLBACK: Transaction failed and was rolled back. Error: " + ex.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+        }
+    }
+
     @PutMapping
     public ResponseEntity<EmployeeDTO> update(@Valid @RequestBody EmployeeDTO employeeDTO) {
         return ResponseEntity.ok(employeeService.update(employeeDTO));

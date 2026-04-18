@@ -8,6 +8,8 @@ public interface EmployeeService {
 
     void save(EmployeeDTO employeeDTO);
 
+    void createEmployeeAndIdCardForAtomicDemo(boolean shouldFail);
+
     EmployeeDTO update(EmployeeDTO employeeDTO);
 
     EmployeeDTO findById(Long id);
