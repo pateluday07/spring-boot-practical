@@ -1,22 +1,75 @@
-# Spring Boot JPA `@MapsId` - Practical Notes
+# Spring Boot Transactional Atomicity Demo
 
-This project demonstrates a one-to-one mapping using a **shared primary key** with `@MapsId` between `Employee` and `IdCard`.
+This branch is focused on **transactional atomicity** using `Employee` and `IdCard`.
 
-## 1) What `@MapsId` means here
+The demo shows:
+- first database action succeeds (`Employee` save)
+- second action fails (`IdCard` step)
+- Spring rolls back the **entire** transaction
 
-`@MapsId` tells JPA that `IdCard` should reuse the primary key of `Employee`.
+So either both entities are persisted, or none are.
 
-- Parent entity: `Employee` (`id` is generated with `IDENTITY`)
-- Child entity: `IdCard` (`id` is not generated separately)
-- Relationship key: `id_card.id` is both:
-  - Primary key of `id_card`
-  - Foreign key referencing `employee.id`
+## 1) Single demo API
 
-So there is no separate `employee_id` column in `id_card` for this mapping style.
+Use one endpoint with a boolean request parameter:
 
-## 2) Entity mapping in this project
+```http
+POST /api/v1/employees/transactional-demo?shouldFail=true
+POST /api/v1/employees/transactional-demo?shouldFail=false
+```
 
-`IdCard` (owning side, shared PK):
+- `shouldFail=true` (default) -> throws exception after `Employee` save
+- `shouldFail=false` -> saves both `Employee` and `IdCard`
+
+## 2) What is demonstrated
+
+The service method `createEmployeeAndIdCardForAtomicDemo(boolean shouldFail)` is `@Transactional` and does two steps:
+
+1. Save `Employee` using `employeeRepository.save(...)`
+2. Save `IdCard` using `idCardRepository.save(...)`
+
+When `shouldFail=true`, an exception is intentionally thrown between these steps.
+Because both steps are in one transaction, DB state is rolled back to the start of the method.
+
+## 3) Why this is a strong atomicity example
+
+This is clearer than a single cascade save for teaching:
+- operations are visibly separate
+- failure point is explicit
+- rollback effect is easy to explain on camera
+
+You can explain it as:
+> "Even though Employee save happened first, the final transaction failed, so Employee is also rolled back."
+
+## 4) Quick test flow for video
+
+1. Call `POST /api/v1/employees/transactional-demo?shouldFail=false`
+2. Verify record exists in `employee` and `id_card`
+3. Call `POST /api/v1/employees/transactional-demo?shouldFail=true`
+4. Verify no partial data was committed for failed request
+
+## 5) SQL checks (optional for demo)
+
+```sql
+SELECT e.id, e.email FROM employee e ORDER BY e.id DESC;
+SELECT c.id, c.card_number FROM id_card c ORDER BY c.id DESC;
+```
+
+For success mode, new rows appear in both tables with matching IDs.
+For fail mode, no new partial row should remain.
+
+## 6) Demo data note
+
+The service currently uses fixed demo values:
+- `firstName`: `Harry`
+- `lastName`: `Potter`
+- `email`: `harry@gmail.com`
+
+Because `email` is unique, a second successful call may fail with conflict unless you delete/update that row first.
+
+## 7) `@MapsId` context used in this branch
+
+`IdCard` uses shared primary key mapping:
 
 ```java
 @Id
@@ -28,48 +81,9 @@ private Long id;
 private Employee employee;
 ```
 
-`Employee` (inverse side):
-
-```java
-@OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-private IdCard idCard;
-```
-
-## 3) Persist behavior with `@MapsId`
-
-When persisting, set both sides through `employee.setIdCard(idCard)` and save `Employee`.
-
-Because of `@MapsId`:
-- `Employee` is inserted first and gets generated `id`
-- `IdCard.id` is automatically mapped to that same `Employee.id`
-- `IdCard` row uses the same key value as its parent
-
-## 4) Expected table shape
-
-```sql
-DESCRIBE employee;
-DESCRIBE id_card;
-```
-
-You should see:
-- `employee.id` as PK
-- `id_card.id` as PK and FK to `employee.id`
-
-## 5) Verify shared primary key data
-
-```sql
-SELECT e.id AS employee_id, c.id AS id_card_id, c.card_number
-FROM employee e
-LEFT JOIN id_card c ON c.id = e.id;
-```
-
-For linked rows, `employee_id` and `id_card_id` must be equal.
-
-## 6) Notes for this codebase
-
-- `cascade = CascadeType.ALL` allows persisting/removing `IdCard` through `Employee`
-- `orphanRemoval = true` removes the old `IdCard` row when detached from `Employee`
-- Both sides use `FetchType.LAZY`
+This means `id_card.id` is both:
+- primary key of `id_card`
+- foreign key to `employee.id`
 
 ### Helpful links
 
