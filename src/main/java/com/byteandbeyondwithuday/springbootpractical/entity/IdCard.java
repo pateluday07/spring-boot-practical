@@ -10,7 +10,6 @@ import java.util.Objects;
 public class IdCard {
 
     @Id
-    @Column(name = "employee_id")
     private Long id;
     @Column(nullable = false, unique = true, length = 50)
     private String cardNumber;
@@ -20,7 +19,7 @@ public class IdCard {
     private LocalDate expiryDate;
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false, unique = true)
+    @JoinColumn(name = "id", nullable = false, unique = true)
     @JsonIgnore
     private Employee employee;
 
