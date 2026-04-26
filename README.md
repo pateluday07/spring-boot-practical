@@ -1,128 +1,83 @@
-# Spring Boot JPA One-to-One - Practical Notes
+# Spring Boot JPA One-to-Many - Practical Notes
 
-This README is based on the `Employee` and `IdCard` entities in this project.
+This README is focused on the `Employee` -> `Address` One-to-Many mapping in this project (`spring_boot_practical`, MySQL).
 
-## 1) What is One-to-One
+## 1) What is One-to-Many
 
-A One-to-One relationship means one row in table A is linked to exactly one row in table B.
+A One-to-Many relationship means:
+- One row in parent table can be linked to many rows in child table.
+- Each child row belongs to exactly one parent row.
 
 In this project:
-- One `Employee` has one `IdCard`.
-- One `IdCard` belongs to one `Employee`.
+- One `Employee` can have multiple `Address` records.
+- One `Address` belongs to one `Employee`.
 
 ## 2) Database Design
 
-The project uses two tables:
-- `employee`
-- `id_card`
+The relevant tables are:
+- `employee` (parent)
+- `address` (child)
 
-`id_card.employee_id` references `employee.id` and is unique, which enforces one-to-one.
+Foreign key:
+- `address.employee_id` references `employee.id`
+- `NOT NULL` on `employee_id` ensures every address is tied to an employee
 
-## 3) Owning vs Inverse
+Unlike One-to-One, `employee_id` is **not unique** here, so many addresses can reference the same employee.
 
-`IdCard` is the owning side because it contains `@JoinColumn`.
+## 3) Entity Mapping
+
+### Parent side (`Employee`)
 
 ```java
-@OneToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "employee_id", nullable = false, unique = true)
+@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Address> addresses = new ArrayList<>();
+```
+
+### Child side (`Address`)
+
+```java
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "employee_id", nullable = false)
 private Employee employee;
 ```
 
-`Employee` is the inverse side because it uses `mappedBy = "employee"`.
+## 4) Owning vs Inverse Side
 
-```java
-@OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-private IdCard idCard;
-```
+- `Address` is the owning side because it has `@JoinColumn`.
+- `Employee` is the inverse side because it uses `mappedBy = "employee"`.
 
-## 4) mappedBy
+`mappedBy` prevents JPA from creating an extra join table or duplicate foreign key mapping.
 
-`mappedBy = "employee"` tells JPA:
-- Do not create another foreign key column on `employee`.
-- The relationship is controlled by `IdCard.employee`.
+## 5) Helper Methods in `Employee`
 
-## 5) Foreign key
+The `Employee` entity includes helper methods to keep both sides in sync:
+- `addAddress(Address address)` adds address and sets `address.setEmployee(this)`
+- `setAddresses(List<Address> addresses)` clears old list and re-attaches new items through `addAddress(...)`
 
-Foreign key is:
-- Column: `id_card.employee_id`
-- References: `employee.id`
-- Constraint behavior: `NOT NULL` + `UNIQUE`
+This is important to avoid incomplete relationship state during persist/merge.
 
-This ensures each ID card is tied to exactly one employee, and an employee can have only one ID card.
+## 6) Cascade and Orphan Removal
 
-## 6) Cascade
-
-On `Employee` side:
+Configured on parent side:
 
 ```java
 cascade = CascadeType.ALL
-```
-
-Effect:
-- Persist employee -> id card is persisted.
-- Merge/remove operations propagate to id card.
-
-## 7) orphanRemoval
-
-On `Employee` side:
-
-```java
 orphanRemoval = true
 ```
 
 Effect:
-- If `employee.setIdCard(null)` is called and saved, the old `id_card` row is deleted as an orphan.
+- Save employee -> addresses are saved automatically.
+- Delete employee -> addresses are deleted automatically.
+- Remove an address from `employee.getAddresses()` and save -> that address row is deleted as orphan.
 
-## 8) LAZY vs EAGER
+## 7) Fetch Strategy
 
-Both sides are configured as `FetchType.LAZY`.
+`Address -> Employee` is `LAZY`:
+- Loading an address does not immediately load employee.
+- Employee is loaded only when accessed inside an active persistence context.
 
-Meaning:
-- `Employee` loads without `IdCard` initially.
-- `IdCard` loads without `Employee` initially.
-- Related object loads only when accessed (inside active persistence context/session).
-
-## 9) Show tables + insert sample
-
-### Show table structure
-
-```sql
-USE spring_boot_practical;
-
-SHOW TABLES;
-DESCRIBE employee;
-DESCRIBE id_card;
-```
-
-### Insert sample data
-
-Use existing files:
-- `src/main/resources/sql/insert_employee.sql`
-- `src/main/resources/sql/insert_id_card.sql`
-
-Or run manually:
-
-```sql
-USE your_database_name;
-
-INSERT INTO employee (first_name, last_name, email, salary)
-VALUES ('John', 'Miller', 'john.miller@example.com', 95000.00);
-
-INSERT INTO id_card (card_number, issue_date, expiry_date, employee_id)
-VALUES ('EMP-1001', '2026-01-01', '2028-12-31',
-        (SELECT id FROM employee WHERE email = 'john.miller@example.com'));
-```
-
-### Verify relationship
-
-```sql
-SELECT e.id, e.first_name, e.email, c.card_number
-FROM employee e
-LEFT JOIN id_card c ON c.employee_id = e.id;
-```
-
-### Helpful links
+## Helpful Links
 
 [![YouTube](https://img.shields.io/badge/YouTube-ByteAndBeyondWithUday-red?logo=youtube&logoColor=white&style=flat-square)](https://www.youtube.com/@ByteAndBeyondWithUday)
 
-[![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/uday-s-public-workspace/folder/1581944-5479ea1d-631e-444b-8745-d1d2d8e2731e?action=share&source=copy-link&creator=1581944)
+[![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/workspace/uday-s-public-workspace/folder/1581944-42e718e1-ae1a-410b-960d-0c4266b26fde?action=share&source=copy-link&creator=1581944)
