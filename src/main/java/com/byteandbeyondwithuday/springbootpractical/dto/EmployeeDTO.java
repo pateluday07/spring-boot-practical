@@ -1,11 +1,14 @@
 package com.byteandbeyondwithuday.springbootpractical.dto;
 
+import com.byteandbeyondwithuday.springbootpractical.entity.Address;
 import com.byteandbeyondwithuday.springbootpractical.entity.IdCard;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class EmployeeDTO {
@@ -19,6 +22,7 @@ public class EmployeeDTO {
     @DecimalMin(value = "8000.00", message = "{employee.salary.min}")
     private BigDecimal salary;
     private IdCard idCard;
+    private List<Address> addresses = new ArrayList<>();
 
     public Long getEmployeeId() {
         return employeeId;
@@ -66,6 +70,14 @@ public class EmployeeDTO {
 
     public void setIdCard(IdCard idCard) {
         this.idCard = idCard;
+    }
+
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
     }
 
     @Override

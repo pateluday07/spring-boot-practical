@@ -3,6 +3,8 @@ package com.byteandbeyondwithuday.springbootpractical.entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -21,6 +23,8 @@ public class Employee {
     private BigDecimal salary;
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private IdCard idCard;
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> addresses = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -80,6 +84,26 @@ public class Employee {
 
     public void removeIdCard() {
         this.idCard = null;
+    }
+
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses.clear();
+        if (addresses == null) {
+            return;
+        }
+        addresses.forEach(this::addAddress);
+    }
+
+    public void addAddress(Address address) {
+        if (address == null) {
+            return;
+        }
+        addresses.add(address);
+        address.setEmployee(this);
     }
 
     @Override
