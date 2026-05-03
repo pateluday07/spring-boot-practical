@@ -2,12 +2,14 @@ package com.byteandbeyondwithuday.springbootpractical.service;
 
 import com.byteandbeyondwithuday.springbootpractical.dto.EmployeeDTO;
 import com.byteandbeyondwithuday.springbootpractical.entity.Employee;
+import com.byteandbeyondwithuday.springbootpractical.entity.Project;
 import com.byteandbeyondwithuday.springbootpractical.exception.BadRequestException;
 import com.byteandbeyondwithuday.springbootpractical.exception.ErrorMessage;
 import com.byteandbeyondwithuday.springbootpractical.exception.ResourceConflictException;
 import com.byteandbeyondwithuday.springbootpractical.exception.ResourceNotFoundException;
 import com.byteandbeyondwithuday.springbootpractical.mapper.EmployeeMapper;
 import com.byteandbeyondwithuday.springbootpractical.repository.EmployeeRepository;
+import com.byteandbeyondwithuday.springbootpractical.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,24 +21,28 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
+    private final ProjectService projectService;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper, ProjectService projectService) {
         this.employeeRepository = employeeRepository;
         this.employeeMapper = employeeMapper;
+        this.projectService = projectService;
     }
 
     @Override
     public void save(EmployeeDTO employeeDTO) {
         validateEmployeeForCreate(employeeDTO);
-
-        employeeRepository.save(employeeMapper.toEntity(employeeDTO));
+        Employee employee = employeeMapper.toEntity(employeeDTO);
+        mapEmployeeToProjects(employeeDTO, employee);
+        employeeRepository.save(employee);
     }
 
     @Override
     public EmployeeDTO update(EmployeeDTO employeeDTO) {
         validateEmployeeForUpdate(employeeDTO);
-
-        return employeeMapper.toDTO(employeeRepository.save(employeeMapper.toEntity(employeeDTO)));
+        Employee employee = employeeMapper.toEntity(employeeDTO);
+        mapEmployeeToProjects(employeeDTO, employee);
+        return employeeMapper.toDTO(employeeRepository.save(employee));
     }
 
     @Override
@@ -107,6 +113,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (!employeeRepository.existsById(id)) {
             throw new ResourceNotFoundException(ErrorMessage.EMPLOYEE_NOT_FOUND.formatMessage(id));
         }
+    }
+
+    private void mapEmployeeToProjects(EmployeeDTO employeeDTO, Employee employee) {
+        employeeDTO.getProjectIds().stream()
+                .map(projectService::findById)
+                .forEach(employee::addProject);
     }
 
 }

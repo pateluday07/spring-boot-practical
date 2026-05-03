@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Employee {
@@ -25,6 +27,13 @@ public class Employee {
     private IdCard idCard;
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "employee_project",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "project_id")
+    )
+    private Set<Project> projects = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -104,6 +113,18 @@ public class Employee {
         }
         addresses.add(address);
         address.setEmployee(this);
+    }
+
+    public Set<Project> getProjects() {
+        return projects;
+    }
+
+    public void addProject(Project project) {
+        if (project == null) {
+            return;
+        }
+        projects.add(project);
+        project.getEmployees().add(this);
     }
 
     @Override

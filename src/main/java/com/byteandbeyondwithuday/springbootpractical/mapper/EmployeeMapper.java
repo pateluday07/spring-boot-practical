@@ -34,6 +34,7 @@ public class EmployeeMapper {
         employeeDTO.setSalary(employee.getSalary());
         employeeDTO.setIdCard(employee.getIdCard());
         employeeDTO.setAddresses(employee.getAddresses());
+        employeeDTO.setProjects(employee.getProjects());
         return employeeDTO;
     }
 }

@@ -2,14 +2,18 @@ package com.byteandbeyondwithuday.springbootpractical.dto;
 
 import com.byteandbeyondwithuday.springbootpractical.entity.Address;
 import com.byteandbeyondwithuday.springbootpractical.entity.IdCard;
+import com.byteandbeyondwithuday.springbootpractical.entity.Project;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class EmployeeDTO {
 
@@ -23,6 +27,8 @@ public class EmployeeDTO {
     private BigDecimal salary;
     private IdCard idCard;
     private List<Address> addresses = new ArrayList<>();
+    private Set<Long> projectIds = new HashSet<>();
+    private Set<Project> projects = new HashSet<>();
 
     public Long getEmployeeId() {
         return employeeId;
@@ -78,6 +84,23 @@ public class EmployeeDTO {
 
     public void setAddresses(List<Address> addresses) {
         this.addresses = addresses;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    public Set<Long> getProjectIds() {
+        return projectIds;
+    }
+
+    public void setProjectIds(Set<Long> projectIds) {
+        this.projectIds = projectIds;
+    }
+
+    public Set<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(Set<Project> projects) {
+        this.projects = projects;
     }
 
     @Override
