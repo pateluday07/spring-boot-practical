@@ -2,14 +2,12 @@ package com.byteandbeyondwithuday.springbootpractical.service;
 
 import com.byteandbeyondwithuday.springbootpractical.dto.EmployeeDTO;
 import com.byteandbeyondwithuday.springbootpractical.entity.Employee;
-import com.byteandbeyondwithuday.springbootpractical.entity.Project;
 import com.byteandbeyondwithuday.springbootpractical.exception.BadRequestException;
 import com.byteandbeyondwithuday.springbootpractical.exception.ErrorMessage;
 import com.byteandbeyondwithuday.springbootpractical.exception.ResourceConflictException;
 import com.byteandbeyondwithuday.springbootpractical.exception.ResourceNotFoundException;
 import com.byteandbeyondwithuday.springbootpractical.mapper.EmployeeMapper;
 import com.byteandbeyondwithuday.springbootpractical.repository.EmployeeRepository;
-import com.byteandbeyondwithuday.springbootpractical.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
