@@ -291,4 +291,4 @@ Now Employee 1 is linked only with Project 1.
 
 [![YouTube](https://img.shields.io/badge/YouTube-ByteAndBeyondWithUday-red?logo=youtube&logoColor=white&style=flat-square)](https://www.youtube.com/@ByteAndBeyondWithUday)
 
-[![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/workspace/uday-s-public-workspace/folder/1581944-42e718e1-ae1a-410b-960d-0c4266b26fde?action=share&source=copy-link&creator=1581944)
+[![Postman](https://img.shields.io/badge/Postman-Collection-orange?logo=postman&style=flat-square)](https://www.postman.com/planetary-water-884580/workspace/uday-s-public-workspace/folder/1581944-acfdae96-e942-43ce-844e-82ee4f640b4d?action=share&source=copy-link&creator=1581944)
